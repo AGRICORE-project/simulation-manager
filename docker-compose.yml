@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  simulation-manager:
+    build: .
+    ports:
+      - 7193:8004
+    command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8004 --reload
+    env_file:
+      - .env
+
+  worker_simulation_manager:
+    build: .
+    command: celery -A worker_simulation_manager.app worker -Q simulation_manager --concurrency=10 -P prefork -n simulation_manager_worker@%h --loglevel=debug
+    
+    # volumes:
+    #   - ./src:/usr/src/app
+    env_file:
+      - .env
+
+  worker_long_term:
+    build: .
+    command: celery -A worker_long_term.app worker -Q long_term --concurrency=10 -P prefork -n long_term_worker@%h --loglevel=debug
+    env_file:
+      - .env
+
+  worker_short_term_solver:
+    build: .
+    command: celery -A worker_short_term_solver.app worker -Q short_term_solver --concurrency=10 -P prefork -n short_term_solver_orker@%h --loglevel=debug
+    env_file:
+      - .env
+
+    
+  worker_short_term_scheduler:
+    build: .
+    command: celery -A worker_short_term_scheduler.app worker -Q short_term_scheduler --concurrency=10 -P prefork -n short_term_scheduler_worker@%h --loglevel=debug
+    env_file:
+      - .env
+
+  dashboard:
+    build: .
+    command: celery -A flower_dashboard.app flower --port=5555 --debug=True
+    ports:
+      - 5556:5555
+    env_file:
+      - .env

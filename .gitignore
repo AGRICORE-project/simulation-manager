@@ -1,0 +1,20 @@
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+*.pyc
+__pycache
+.DS_Store
+simulations/**/*
+options.csv
+test2.gams
+test2.lst
